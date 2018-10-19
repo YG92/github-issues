@@ -18,7 +18,7 @@
 <mat-spinner [diameter]="40" color="primary" *ngIf="loading"></mat-spinner>
 <div class="card-wrapper" *ngIf="!loading">
   <p *ngIf="issues && issues.length === 0">Нет данных</p>
-  <mat-card *ngFor="let issue of issues">
+  <mat-card class="card" *ngFor="let issue of issues">
     <a routerLink="/issue-detail/{{ owner }}/{{ repo }}/{{ issue.number }}">
       <mat-card-title>{{ issue.title }}</mat-card-title>
       <mat-card-subtitle>{{ issue.number }}</mat-card-subtitle>
