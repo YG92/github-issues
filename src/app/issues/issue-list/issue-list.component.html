@@ -1,0 +1,22 @@
+<div class="page-wrapper">
+  <h1>Список проблем</h1>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-form-field>
+      <input matInput placeholder="Пользователь" formControlName="owner">
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput placeholder="Репозиторий" formControlName="repo">
+    </mat-form-field>
+
+    <button type="submit" [disabled]="form.invalid" mat-raised-button color="primary">Поиск</button>
+  </form>
+  <div class="card-wrapper">
+    <mat-spinner [diameter]="40" color="primary" *ngIf="loading"></mat-spinner>
+    <mat-card *ngFor="let issue of issues">
+      <mat-card-title>{{ issue.title }}</mat-card-title>
+      <mat-card-subtitle>{{ issue.number }}</mat-card-subtitle>
+      <mat-card-subtitle>{{ issue.created_at | date: 'dd/MM/yyyy' }}</mat-card-subtitle>
+    </mat-card>
+  </div>
+</div>

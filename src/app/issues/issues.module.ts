@@ -2,18 +2,24 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IssueListComponent } from './issue-list/issue-list.component';
 import { IssueDetailComponent } from './issue-detail/issue-detail.component';
-import { MainRoutingModule } from './main-routing.module';
 import { MaterialModule } from '../material/material.module';
+import { ReactiveFormsModule } from '@angular/forms';
+import { IssueService } from './issue-service/issue.service';
+import { SharedModule } from '../shared/shared.module';
+import { IssuesRoutingModule } from './issues-routing.module';
 
 @NgModule({
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     MaterialModule,
-    MainRoutingModule
+    SharedModule,
+    IssuesRoutingModule
   ],
   declarations: [
     IssueListComponent,
     IssueDetailComponent,
-  ]
+  ],
+  providers: [IssueService]
 })
-export class MainModule { }
+export class IssuesModule { }
