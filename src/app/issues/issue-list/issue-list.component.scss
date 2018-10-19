@@ -1,3 +1,9 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
 form {
   width: 480px;
   display: flex;
@@ -12,5 +18,8 @@ form {
   mat-card {
     width: 100%;
     margin: 15px 0;
+  }
+  p {
+    font-size: 35px;
   }
 }

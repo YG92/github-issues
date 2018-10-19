@@ -5,13 +5,19 @@
   </mat-form-field>
 
   <mat-form-field>
-    <input matInput placeholder="Репозиторий" formControlName="repo">
+    <input matInput placeholder="Репозиторий" formControlName="repo" [matAutocomplete]="auto">
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option *ngFor="let repo of repos" [value]="repo">
+        {{ repo }}
+      </mat-option>
+    </mat-autocomplete>
   </mat-form-field>
 
   <button type="submit" [disabled]="form.invalid" mat-raised-button color="primary">Поиск</button>
 </form>
-<div class="card-wrapper">
-  <mat-spinner [diameter]="40" color="primary" *ngIf="loading"></mat-spinner>
+<mat-spinner [diameter]="40" color="primary" *ngIf="loading"></mat-spinner>
+<div class="card-wrapper" *ngIf="!loading">
+  <p *ngIf="issues && issues.length === 0">Нет данных</p>
   <mat-card *ngFor="let issue of issues">
     <a routerLink="/issue-detail/{{ owner }}/{{ repo }}/{{ issue.number }}">
       <mat-card-title>{{ issue.title }}</mat-card-title>

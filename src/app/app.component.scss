@@ -3,7 +3,12 @@
   width: 80%;
   padding: 0 10%;
   background-color: rgba(0,0,0,.06);
+  display: flex;
+  flex-direction: column;
   .component-wrapper {
     padding-top: 2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
 }

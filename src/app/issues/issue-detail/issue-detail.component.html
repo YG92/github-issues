@@ -6,9 +6,9 @@
       <div mat-card-avatar>
         <img src="{{ issue.user.avatar }}" alt="avatar">
       </div>
-      <a href="{{ issue.user.profile }}">
-        <mat-card-title>{{ issue.user.username }}</mat-card-title>
-      </a>
+      <mat-card-title>
+        <a href="{{ issue.user.profile }}" matTooltip="Просмотреть профиль">{{ issue.user.username }}</a>
+      </mat-card-title>
       <mat-card-subtitle>{{ issue.created_at | date: 'dd:MM:yyyy' }}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>

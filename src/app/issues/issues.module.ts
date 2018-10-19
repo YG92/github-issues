@@ -7,6 +7,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { IssueService } from './issue-service/issue.service';
 import { SharedModule } from '../shared/shared.module';
 import { IssuesRoutingModule } from './issues-routing.module';
+import { ReposService } from './repos-service/repos.service';
 
 @NgModule({
   imports: [
@@ -20,6 +21,9 @@ import { IssuesRoutingModule } from './issues-routing.module';
     IssueListComponent,
     IssueDetailComponent,
   ],
-  providers: [IssueService]
+  providers: [
+    IssueService,
+    ReposService
+  ]
 })
 export class IssuesModule { }
