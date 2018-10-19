@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { IssueService } from '../issue-service/issue.service';
-import { IssueModel } from '../issue.model';
 import { MatDialog } from '@angular/material';
 import { ErrorAlertComponent } from '../../shared/error-alert/error-alert.component';
+import { IssueBaseModel } from './issue-base.model';
 
 @Component({
   selector: 'app-issue-list',
@@ -12,8 +12,10 @@ import { ErrorAlertComponent } from '../../shared/error-alert/error-alert.compon
 })
 export class IssueListComponent implements OnInit {
 
-  issues: IssueModel[];
+  issues: IssueBaseModel[];
   loading = false;
+  owner: string;
+  repo: string;
 
   form = this.fb.group({
     owner: ['', Validators.required],
@@ -31,6 +33,8 @@ export class IssueListComponent implements OnInit {
 
   onSubmit() {
     const val = this.form.value;
+    this.owner = val.owner;
+    this.repo = val.repo;
     this.loading = true;
     this.issueSrv.getIssuesList(val.owner, val.repo)
       .subscribe(
@@ -41,6 +45,7 @@ export class IssueListComponent implements OnInit {
         err => {
           this.loading = false;
           this.dialog.open(ErrorAlertComponent);
+          this.issues = [];
         }
       );
   }

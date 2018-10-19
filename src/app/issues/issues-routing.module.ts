@@ -6,7 +6,7 @@ import { IssueDetailComponent } from './issue-detail/issue-detail.component';
 
 const routes: Routes = [
   { path: 'issue-list', component: IssueListComponent },
-  { path: 'issue-detail', component: IssueDetailComponent }
+  { path: 'issue-detail/:owner/:repo/:number', component: IssueDetailComponent }
 ];
 
 @NgModule({

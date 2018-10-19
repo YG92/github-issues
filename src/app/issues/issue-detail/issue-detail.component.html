@@ -1,3 +1,20 @@
-<p>
-  issue-detail works!
-</p>
+<mat-spinner [diameter]="40" color="primary" *ngIf="loading"></mat-spinner>
+<div *ngIf="!loading && issue">
+  <h2>{{ issue.title }}</h2>
+  <mat-card>
+    <mat-card-header>
+      <div mat-card-avatar>
+        <img src="{{ issue.user.avatar }}" alt="avatar">
+      </div>
+      <a href="{{ issue.user.profile }}">
+        <mat-card-title>{{ issue.user.username }}</mat-card-title>
+      </a>
+      <mat-card-subtitle>{{ issue.created_at | date: 'dd:MM:yyyy' }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>{{ issue.text }}</p>
+    </mat-card-content>
+  </mat-card>
+  <button mat-raised-button color="primary" (click)="goBack()">Назад</button>
+</div>
+
