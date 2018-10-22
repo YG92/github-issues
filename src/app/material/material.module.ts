@@ -6,10 +6,11 @@ import {
   MatCardModule,
   MatDialogModule,
   MatIconModule,
-  MatInputModule,
+  MatInputModule, MatPaginatorIntl,
   MatPaginatorModule,
   MatProgressSpinnerModule, MatTooltipModule,
 } from '@angular/material';
+import { russianPaginatorIntl } from './russian-paginator-intl';
 
 @NgModule({
   imports: [
@@ -34,6 +35,7 @@ import {
     MatDialogModule,
     MatAutocompleteModule,
     MatTooltipModule
-  ]
+  ],
+  providers: [{ provide: MatPaginatorIntl, useValue: russianPaginatorIntl() }]
 })
 export class MaterialModule { }

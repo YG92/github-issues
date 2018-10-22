@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { IssueService } from '../issue-service/issue.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog, PageEvent } from '@angular/material';
 import { ErrorAlertComponent } from '../../shared/error-alert/error-alert.component';
 import { IssueBaseModel } from './issue-base.model';
 import { debounceTime } from 'rxjs/operators';
@@ -20,6 +20,10 @@ export class IssueListComponent implements OnInit {
   owner: string;
   repo: string;
   repos: string[];
+
+  resultsLength = 0;
+  pageSize = 5;
+  pageSizeOptions: number[] = [5, 10, 25, 100];
 
   form = this.fb.group({
     owner: ['', Validators.required],
@@ -47,12 +51,17 @@ export class IssueListComponent implements OnInit {
     const val = this.form.value;
     this.owner = val.owner;
     this.repo = val.repo;
+    this.getIssues();
+  }
+
+  getIssues(pageIndex = 0): void {
     this.loading = true;
-    this.issueSrv.getIssuesList(val.owner, val.repo)
+    this.issueSrv.getIssuesList(this.owner, this.repo, pageIndex + 1, this.pageSize)
       .subscribe(
         res => {
           this.loading = false;
-          this.issues = res;
+          this.resultsLength = res.total_count;
+          this.issues = res.items;
         },
         err => {
           this.loading = false;
@@ -60,6 +69,13 @@ export class IssueListComponent implements OnInit {
           this.issues = [];
         }
       );
+  }
+
+  pageEvent(ev) {
+    this.pageSize = ev.pageSize;
+    if (this.owner && this.repo) {
+      this.getIssues(ev.pageIndex);
+    }
   }
 
 }

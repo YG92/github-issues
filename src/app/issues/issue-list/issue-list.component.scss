@@ -24,12 +24,21 @@ form {
   width: 100%;
   margin: auto;
   .card {
-    margin: 15px 0;
+    margin: 10px 0;
+    padding: 15px;
     word-wrap: break-word;
     white-space: pre-wrap;
+    .mat-card-title,
+    .mat-card-subtitle {
+      margin-bottom: 8px;
+    }
   }
   p {
     text-align: center;
     font-size: 35px;
   }
+}
+
+.paginator {
+  margin-top: auto;
 }

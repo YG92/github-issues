@@ -21,9 +21,15 @@
   <mat-card class="card" *ngFor="let issue of issues">
     <a routerLink="/issue-detail/{{ owner }}/{{ repo }}/{{ issue.number }}">
       <mat-card-title>{{ issue.title }}</mat-card-title>
-      <mat-card-subtitle>{{ issue.number }}</mat-card-subtitle>
-      <mat-card-subtitle>{{ issue.created_at | date: 'dd/MM/yyyy' }}</mat-card-subtitle>
+      <mat-card-subtitle>#{{ issue.number }} Дата: {{ issue.created_at | date: 'dd/MM/yyyy' }}</mat-card-subtitle>
     </a>
   </mat-card>
 </div>
+<mat-paginator
+  class="paginator"
+  [length]="resultsLength"
+  [pageSize]="pageSize"
+  [pageSizeOptions]="pageSizeOptions"
+  (page)="pageEvent($event)">
+</mat-paginator>
 

@@ -6,15 +6,15 @@ import { map } from 'rxjs/operators';
 import { IssueBaseModel } from '../issue-list/issue-base.model';
 import { IssueDetailModel } from '../issue-detail/issue-detail.model';
 
+export interface GithubResp {
+  items: IssueBaseModel[];
+  total_count: number;
+}
+
 @Injectable()
 export class IssueService {
 
   constructor(private http: HttpClient) {}
-
-  getUrl(owner: string, repo: string, number?: number): string {
-    const url = `${environment.apiUrl}/repos/${owner}/${repo}/issues`;
-    return number ? `${url}/${number}` : url;
-  }
 
   mapIssue(issue): IssueBaseModel {
     return {
@@ -24,17 +24,18 @@ export class IssueService {
     };
   }
 
-  getIssuesList(owner: string, repo: string): Observable<IssueBaseModel[]> {
-    return this.http.get<any[]>(this.getUrl(owner, repo))
+  getIssuesList(owner: string, repo: string, pageIndex: number, pageSize: number): Observable<GithubResp> {
+    return this.http.get<any>(`${environment.apiUrl}/search/issues?q=repo:${owner}/${repo}&page=${pageIndex}&per_page=${pageSize}`)
       .pipe(
         map(issues => {
-          return issues.map(i => this.mapIssue(i));
+          issues.items = issues.items.map(i => this.mapIssue(i));
+          return issues;
         })
       );
   }
 
   getIssue(owner: string, repo: string, number: number): Observable<IssueDetailModel> {
-    return this.http.get<any>(this.getUrl(owner, repo, number))
+    return this.http.get<any>(`${environment.apiUrl}/repos/${owner}/${repo}/issues/${number}`)
       .pipe(
         map(i => ({
           ...this.mapIssue(i),
