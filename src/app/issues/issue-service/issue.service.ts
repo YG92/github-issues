@@ -8,6 +8,7 @@ import { IssueDetailModel } from '../issue-detail/issue-detail.model';
 
 export interface GithubResp {
   items: IssueBaseModel[];
+  incomplete_results: boolean;
   total_count: number;
 }
 
