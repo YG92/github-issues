@@ -30,20 +30,19 @@ export class IssueListComponent implements OnInit {
     repo: ['', Validators.required]
   });
 
-  constructor(private fb: FormBuilder,
-              private issueSrv: IssueService,
-              private repoSrv: ReposService,
-              public dialog: MatDialog) {
-  }
+  constructor(
+    private fb: FormBuilder,
+    private issueSrv: IssueService,
+    private repoSrv: ReposService,
+    public dialog: MatDialog
+  ) {}
 
   ngOnInit() {
     this.form.controls['owner'].valueChanges
       .pipe(
         debounceTime(400),
         switchMap(username => this.repoSrv.getRepos(username))
-      ).subscribe(res => {
-      this.repos = res;
-    });
+      ).subscribe(res => this.repos = res);
   }
 
   onSubmit() {
