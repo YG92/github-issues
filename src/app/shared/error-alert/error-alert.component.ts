@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 
 @Component({
   selector: 'app-error-alert',
@@ -8,9 +8,13 @@ import { MatDialogRef } from '@angular/material';
 })
 export class ErrorAlertComponent implements OnInit {
 
-  public dialogRef: MatDialogRef<ErrorAlertComponent>
+  constructor(
+    public dialogRef: MatDialogRef<ErrorAlertComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { message: string }
+  ) {}
 
   ngOnInit() {
+    this.data = this.data ? this.data : { message: 'Не удалось загрузить данные'};
   }
 
 }

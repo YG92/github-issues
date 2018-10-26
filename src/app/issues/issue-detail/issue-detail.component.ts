@@ -36,7 +36,7 @@ export class IssueDetailComponent implements OnInit {
           this.loading = false;
           this.issue = res;
         },
-        err => {
+        () => {
           this.loading = false;
           this.dialog.open(ErrorAlertComponent);
         }

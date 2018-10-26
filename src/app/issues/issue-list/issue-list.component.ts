@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { IssueService } from '../issue-service/issue.service';
-import { MatDialog, PageEvent } from '@angular/material';
+import { MatDialog } from '@angular/material';
 import { ErrorAlertComponent } from '../../shared/error-alert/error-alert.component';
 import { IssueBaseModel } from './issue-base.model';
 import { debounceTime } from 'rxjs/operators';
-import { switchMap } from 'rxjs/internal/operators';
+import { catchError, switchMap } from 'rxjs/internal/operators';
 import { ReposService } from '../repos-service/repos.service';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-issue-list',
@@ -37,12 +38,23 @@ export class IssueListComponent implements OnInit {
     public dialog: MatDialog
   ) {}
 
+  handleGetReposError(): Observable<any[]> {
+    this.dialog.open(ErrorAlertComponent, { data: { message: 'Не удалось загрузить репозитории' } });
+    return of([]);
+  }
+
   ngOnInit() {
-    this.form.controls['owner'].valueChanges
+    this.form.get('owner').valueChanges
       .pipe(
         debounceTime(400),
-        switchMap(username => this.repoSrv.getRepos(username))
-      ).subscribe(res => this.repos = res);
+        switchMap(username => {
+          return this.repoSrv.getRepos(username)
+            .pipe(
+              catchError(() => this.handleGetReposError())
+            );
+        })
+      )
+      .subscribe(res => this.repos = res);
   }
 
   onSubmit() {
@@ -61,7 +73,7 @@ export class IssueListComponent implements OnInit {
           this.resultsLength = res.total_count;
           this.issues = res.items;
         },
-        err => {
+        () => {
           this.loading = false;
           this.dialog.open(ErrorAlertComponent);
           this.issues = [];
