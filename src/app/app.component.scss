@@ -1,14 +1,23 @@
-.page-wrapper {
+:host {
   min-height: 100vh;
-  width: 80%;
-  padding: 0 10%;
-  background-color: rgba(0,0,0,.06);
   display: flex;
   flex-direction: column;
-  .component-wrapper {
-    padding-top: 2rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+}
+
+.component-wrapper {
+  width: 80%;
+  padding: 2rem 10% 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+footer {
+  background-color: #3f51b5;
+  padding: 1rem;
+  margin-top: 1rem;
+  color: white;
+  a:hover {
+    text-decoration: underline;
   }
 }
