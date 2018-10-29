@@ -52,25 +52,32 @@ export class IssueListComponent implements OnInit {
     return this.repos.filter(repo => repo.toLowerCase().includes(value));
   }
 
+  getFilteredRepos(): Observable<string[]> {
+    return this.form.get('repo').valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this.filterRepos(value))
+      );
+  }
+
   getRepos(): void {
     this.form.get('owner').valueChanges
       .pipe(
         debounceTime(400),
         switchMap(username => {
-          return this.repoSrv.getRepos(username)
-            .pipe(
-              catchError(() => this.handleGetReposError()
-              )
-            );
+          if (username.length > 0) {
+            return this.repoSrv.getRepos(username)
+              .pipe(
+                catchError(() => this.handleGetReposError()
+                )
+              );
+          }
+          return of([]);
         })
       )
       .subscribe(res => {
         this.repos = res;
-        this.filteredRepos = this.form.get('repo').valueChanges
-          .pipe(
-            startWith(''),
-            map(value => this.filterRepos(value))
-          );
+        this.filteredRepos = this.getFilteredRepos();
       });
   }
 
