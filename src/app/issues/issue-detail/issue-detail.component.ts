@@ -4,6 +4,7 @@ import { IssueService } from '../issue-service/issue.service';
 import { ErrorAlertComponent } from '../../shared/error-alert/error-alert.component';
 import { MatDialog } from '@angular/material';
 import { IssueDetailModel } from './issue-detail.model';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-issue-detail',
@@ -31,15 +32,10 @@ export class IssueDetailComponent implements OnInit {
     const repo = this.route.snapshot.paramMap.get('repo');
     const number = this.route.snapshot.paramMap.get('number');
     this.issueSrv.getIssue(owner, repo, +number)
+      .pipe(finalize(() => this.loading = false))
       .subscribe(
-        res => {
-          this.loading = false;
-          this.issue = res;
-        },
-        () => {
-          this.loading = false;
-          this.dialog.open(ErrorAlertComponent);
-        }
+        res => this.issue = res,
+        () => this.dialog.open(ErrorAlertComponent)
       );
   }
 

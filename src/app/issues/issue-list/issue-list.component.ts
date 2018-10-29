@@ -4,8 +4,7 @@ import { IssueService } from '../issue-service/issue.service';
 import { MatDialog } from '@angular/material';
 import { ErrorAlertComponent } from '../../shared/error-alert/error-alert.component';
 import { IssueBaseModel } from './issue-base.model';
-import { debounceTime } from 'rxjs/operators';
-import { catchError, switchMap } from 'rxjs/internal/operators';
+import { debounceTime, catchError, switchMap, map, startWith, finalize } from 'rxjs/operators';
 import { ReposService } from '../repos-service/repos.service';
 import { Observable, of } from 'rxjs';
 
@@ -21,6 +20,7 @@ export class IssueListComponent implements OnInit {
   owner: string;
   repo: string;
   repos: string[];
+  filteredRepos: Observable<string[]>;
 
   resultsLength = 0;
   pageSize = 5;
@@ -38,50 +38,66 @@ export class IssueListComponent implements OnInit {
     public dialog: MatDialog
   ) {}
 
-  handleGetReposError(): Observable<any[]> {
+  ngOnInit() {
+    this.getRepos();
+  }
+
+  private handleGetReposError(): Observable<any[]> {
     this.dialog.open(ErrorAlertComponent, { data: { message: 'Не удалось загрузить репозитории' } });
     return of([]);
   }
 
-  ngOnInit() {
+  private filterRepos(v): string[] {
+    const value = v.toLowerCase();
+    return this.repos.filter(repo => repo.toLowerCase().includes(value));
+  }
+
+  getRepos(): void {
     this.form.get('owner').valueChanges
       .pipe(
         debounceTime(400),
         switchMap(username => {
           return this.repoSrv.getRepos(username)
             .pipe(
-              catchError(() => this.handleGetReposError())
+              catchError(() => this.handleGetReposError()
+              )
             );
         })
       )
-      .subscribe(res => this.repos = res);
-  }
-
-  onSubmit() {
-    const val = this.form.value;
-    this.owner = val.owner;
-    this.repo = val.repo;
-    this.getIssues();
+      .subscribe(res => {
+        this.repos = res;
+        this.filteredRepos = this.form.get('repo').valueChanges
+          .pipe(
+            startWith(''),
+            map(value => this.filterRepos(value))
+          );
+      });
   }
 
   getIssues(pageIndex = 0): void {
     this.loading = true;
     this.issueSrv.getIssuesList(this.owner, this.repo, pageIndex + 1, this.pageSize)
+      .pipe(finalize(() => this.loading = false))
       .subscribe(
         res => {
-          this.loading = false;
           this.resultsLength = res.total_count;
           this.issues = res.items;
         },
         () => {
-          this.loading = false;
           this.dialog.open(ErrorAlertComponent);
           this.issues = [];
         }
       );
   }
 
-  pageEvent(ev) {
+  onSubmit(): void {
+    const val = this.form.value;
+    this.owner = val.owner;
+    this.repo = val.repo;
+    this.getIssues();
+  }
+
+  pageEvent(ev): void {
     this.pageSize = ev.pageSize;
     if (this.owner && this.repo) {
       this.getIssues(ev.pageIndex);

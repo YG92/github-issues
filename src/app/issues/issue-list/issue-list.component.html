@@ -7,7 +7,7 @@
   <mat-form-field>
     <input matInput placeholder="Репозиторий" formControlName="repo" [matAutocomplete]="auto">
     <mat-autocomplete #auto="matAutocomplete">
-      <mat-option *ngFor="let repo of repos" [value]="repo">
+      <mat-option *ngFor="let repo of filteredRepos | async" [value]="repo">
         {{ repo }}
       </mat-option>
     </mat-autocomplete>
