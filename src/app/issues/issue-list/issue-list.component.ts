@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { IssueService } from '../issue-service/issue.service';
 import { MatDialog } from '@angular/material';
 import { ErrorAlertComponent } from '../../shared/error-alert/error-alert.component';
 import { IssueBaseModel } from './issue-base.model';
-import { debounceTime, catchError, switchMap, map, startWith, finalize } from 'rxjs/operators';
+import { debounceTime, catchError, switchMap, map, startWith, finalize, tap } from 'rxjs/operators';
 import { ReposService } from '../repos-service/repos.service';
 import { Observable, of } from 'rxjs';
 
@@ -42,6 +42,10 @@ export class IssueListComponent implements OnInit {
     this.getRepos();
   }
 
+  get repoControl(): FormControl {
+    return this.form.get('repo') as FormControl;
+  }
+
   private handleGetReposError(): Observable<any[]> {
     this.dialog.open(ErrorAlertComponent, { data: { message: 'Не удалось загрузить репозитории' } });
     return of([]);
@@ -52,10 +56,18 @@ export class IssueListComponent implements OnInit {
     return this.repos.filter(repo => repo.toLowerCase().includes(value));
   }
 
+  private validateRepoInput(v) {
+    const value = v.toLowerCase();
+    if (!this.repos.includes(value)) {
+      this.repoControl.setErrors({ notInList: true });
+    }
+  }
+
   getFilteredRepos(): Observable<string[]> {
-    return this.form.get('repo').valueChanges
+    return this.repoControl.valueChanges
       .pipe(
         startWith(''),
+        tap(value => this.validateRepoInput(value)),
         map(value => this.filterRepos(value))
       );
   }

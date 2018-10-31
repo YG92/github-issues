@@ -11,6 +11,7 @@
         {{ repo }}
       </mat-option>
     </mat-autocomplete>
+    <mat-error *ngIf="repoControl.hasError('notInList')">Репозитория нет в списке</mat-error>
   </mat-form-field>
 
   <button type="submit" [disabled]="form.invalid" mat-raised-button color="primary">Поиск</button>
