@@ -15,6 +15,9 @@ export class IssueDetailComponent implements OnInit {
 
   issue: IssueDetailModel;
   loading = true;
+  owner: string;
+  repo: string;
+  number: number;
 
   constructor(
     private route: ActivatedRoute,
@@ -28,10 +31,10 @@ export class IssueDetailComponent implements OnInit {
   }
 
   getIssue(): void {
-    const owner = this.route.snapshot.paramMap.get('owner');
-    const repo = this.route.snapshot.paramMap.get('repo');
-    const number = this.route.snapshot.paramMap.get('number');
-    this.issueSrv.getIssue(owner, repo, +number)
+    this.owner = this.route.snapshot.paramMap.get('owner');
+    this.repo = this.route.snapshot.paramMap.get('repo');
+    this.number = +this.route.snapshot.paramMap.get('number');
+    this.issueSrv.getIssue(this.owner, this.repo, this.number)
       .pipe(finalize(() => this.loading = false))
       .subscribe(
         res => this.issue = res,
@@ -40,7 +43,7 @@ export class IssueDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/issue-list']);
+    this.router.navigate(['/search', this.owner, this.repo]);
   }
 
 }
