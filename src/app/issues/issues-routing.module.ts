@@ -5,7 +5,8 @@ import { IssueListComponent } from './issue-list/issue-list.component';
 import { IssueDetailComponent } from './issue-detail/issue-detail.component';
 
 const routes: Routes = [
-  { path: 'issue-list', component: IssueListComponent },
+  { path: 'search', component: IssueListComponent },
+  { path: 'search/:owner/:repo', component: IssueListComponent },
   { path: 'issue-detail/:owner/:repo/:number', component: IssueDetailComponent }
 ];
 

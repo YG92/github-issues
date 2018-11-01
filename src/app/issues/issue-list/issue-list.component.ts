@@ -7,6 +7,7 @@ import { IssueBaseModel } from './issue-base.model';
 import { debounceTime, catchError, switchMap, map, startWith, finalize, tap } from 'rxjs/operators';
 import { ReposService } from '../repos-service/repos.service';
 import { Observable, of } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-issue-list',
@@ -32,6 +33,8 @@ export class IssueListComponent implements OnInit {
   });
 
   constructor(
+    private router: Router,
+    private route: ActivatedRoute,
     private fb: FormBuilder,
     private issueSrv: IssueService,
     private repoSrv: ReposService,
@@ -39,6 +42,11 @@ export class IssueListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.route.paramMap.subscribe(params => {
+      this.owner = params.get('owner');
+      this.repo = params.get('repo');
+      if (this.owner && this.repo) { this.getIssues(); }
+    });
     this.getRepos();
   }
 
@@ -111,9 +119,7 @@ export class IssueListComponent implements OnInit {
 
   onSubmit(): void {
     const val = this.form.value;
-    this.owner = val.owner;
-    this.repo = val.repo;
-    this.getIssues();
+    this.router.navigate(['search', val.owner, val.repo]);
   }
 
   pageEvent(ev): void {
