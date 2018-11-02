@@ -20,6 +20,7 @@ export class IssueListComponent implements OnInit {
   loading = false;
   owner: string;
   repo: string;
+  pageIndex: number;
   repos: string[];
   filteredRepos: Observable<string[]>;
 
@@ -45,6 +46,7 @@ export class IssueListComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.owner = params.get('owner');
       this.repo = params.get('repo');
+      this.pageIndex = params.get('pageIndex') ? +params.get('pageIndex') : 1;
       if (this.owner && this.repo) { this.getIssues(); }
     });
     this.getRepos();
@@ -101,9 +103,9 @@ export class IssueListComponent implements OnInit {
       });
   }
 
-  getIssues(pageIndex = 0): void {
+  getIssues(): void {
     this.loading = true;
-    this.issueSrv.getIssuesList(this.owner, this.repo, pageIndex + 1, this.pageSize)
+    this.issueSrv.getIssuesList(this.owner, this.repo, this.pageIndex, this.pageSize)
       .pipe(finalize(() => this.loading = false))
       .subscribe(
         res => {
@@ -119,13 +121,14 @@ export class IssueListComponent implements OnInit {
 
   onSubmit(): void {
     const val = this.form.value;
-    this.router.navigate(['search', val.owner, val.repo]);
+    this.router.navigate(['search', val.owner, val.repo, 1]);
   }
 
   pageEvent(ev): void {
     this.pageSize = ev.pageSize;
+    this.pageIndex = ev.pageIndex + 1;
     if (this.owner && this.repo) {
-      this.getIssues(ev.pageIndex);
+      this.getIssues();
     }
   }
 

@@ -5,6 +5,7 @@ import { ErrorAlertComponent } from '../../shared/error-alert/error-alert.compon
 import { MatDialog } from '@angular/material';
 import { IssueDetailModel } from './issue-detail.model';
 import { finalize } from 'rxjs/operators';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-issue-detail',
@@ -22,6 +23,7 @@ export class IssueDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private location: Location,
     private issueSrv: IssueService,
     public dialog: MatDialog
   ) {}
@@ -43,7 +45,7 @@ export class IssueDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/search', this.owner, this.repo]);
+    this.location.back();
   }
 
 }
