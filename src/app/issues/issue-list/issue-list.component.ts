@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
-import { IssueService } from '../issue-service/issue.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable, of } from 'rxjs';
+import { debounceTime, catchError, switchMap, map, startWith, finalize, tap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material';
 import { ErrorAlertComponent } from '../../shared/error-alert/error-alert.component';
 import { IssueBaseModel } from './issue-base.model';
-import { debounceTime, catchError, switchMap, map, startWith, finalize, tap } from 'rxjs/operators';
+import { IssueService } from '../issue-service/issue.service';
 import { ReposService } from '../repos-service/repos.service';
-import { Observable, of } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-issue-list',
@@ -23,7 +23,6 @@ export class IssueListComponent implements OnInit {
   pageIndex: number;
   repos: string[];
   filteredRepos: Observable<string[]>;
-
   resultsLength = 0;
   pageSize = 5;
   pageSizeOptions: number[] = [5, 10, 25, 100];
@@ -46,7 +45,7 @@ export class IssueListComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.owner = params.get('owner');
       this.repo = params.get('repo');
-      this.pageIndex = params.get('pageIndex') ? +params.get('pageIndex') : 1;
+      this.pageIndex = +params.get('pageIndex');
       if (this.owner && this.repo) { this.getIssues(); }
     });
     this.getRepos();
@@ -89,10 +88,7 @@ export class IssueListComponent implements OnInit {
         switchMap(username => {
           if (username.length > 0) {
             return this.repoSrv.getRepos(username)
-              .pipe(
-                catchError(() => this.handleGetReposError()
-                )
-              );
+              .pipe(catchError(() => this.handleGetReposError()));
           }
           return of([]);
         })
@@ -126,10 +122,7 @@ export class IssueListComponent implements OnInit {
 
   pageEvent(ev): void {
     this.pageSize = ev.pageSize;
-    this.pageIndex = ev.pageIndex + 1;
-    if (this.owner && this.repo) {
-      this.getIssues();
-    }
+    this.router.navigate(['search', this.owner, this.repo, ev.pageIndex + 1]);
   }
 
 }

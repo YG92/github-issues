@@ -30,6 +30,7 @@
   class="paginator"
   [length]="resultsLength"
   [pageSize]="pageSize"
+  [pageIndex]="pageIndex - 1"
   [pageSizeOptions]="pageSizeOptions"
   (page)="pageEvent($event)">
 </mat-paginator>
