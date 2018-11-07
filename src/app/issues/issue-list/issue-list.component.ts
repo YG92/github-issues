@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { debounceTime, catchError, switchMap, map, startWith, finalize, tap } from 'rxjs/operators';
@@ -18,19 +18,15 @@ export class IssueListComponent implements OnInit {
 
   issues: IssueBaseModel[];
   loading = false;
-  owner: string;
-  repo: string;
+  owner = '';
+  repo = '';
   pageIndex: number;
   repos: string[];
   filteredRepos: Observable<string[]>;
   resultsLength = 0;
   pageSize = 5;
   pageSizeOptions: number[] = [5, 10, 25, 100];
-
-  form = this.fb.group({
-    owner: ['', Validators.required],
-    repo: ['', Validators.required]
-  });
+  form: FormGroup;
 
   constructor(
     private router: Router,
@@ -46,9 +42,17 @@ export class IssueListComponent implements OnInit {
       this.owner = params.get('owner');
       this.repo = params.get('repo');
       this.pageIndex = +params.get('pageIndex');
+      this.initForm();
       if (this.owner && this.repo) { this.getIssues(); }
     });
     this.getRepos();
+  }
+
+  initForm(): void {
+    this.form = this.fb.group({
+      owner: [this.owner, Validators.required],
+      repo: [this.repo, Validators.required]
+    });
   }
 
   get repoControl(): FormControl {
