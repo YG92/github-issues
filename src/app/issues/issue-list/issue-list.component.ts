@@ -8,6 +8,7 @@ import { ErrorAlertComponent } from '../../shared/error-alert/error-alert.compon
 import { IssueBaseModel } from './issue-base.model';
 import { IssueService } from '../issue-service/issue.service';
 import { ReposService } from '../repos-service/repos.service';
+import { StoreDataService } from '../store-data/store-data.service';
 
 @Component({
   selector: 'app-issue-list',
@@ -20,11 +21,11 @@ export class IssueListComponent implements OnInit {
   loading = false;
   owner = '';
   repo = '';
-  pageIndex: number;
   repos: string[];
   filteredRepos: Observable<string[]>;
-  resultsLength = 0;
-  pageSize = 5;
+  resultsLength: number;
+  pageIndex: number;
+  pageSize: number;
   pageSizeOptions: number[] = [5, 10, 25, 100];
   form: FormGroup;
 
@@ -32,20 +33,23 @@ export class IssueListComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private fb: FormBuilder,
+    public dialog: MatDialog,
     private issueSrv: IssueService,
     private repoSrv: ReposService,
-    public dialog: MatDialog
+    private dataSrv: StoreDataService
   ) {}
 
   ngOnInit() {
+    this.filteredRepos = this.dataSrv.currentRepos;
     this.route.paramMap.subscribe(params => {
       this.owner = params.get('owner');
       this.repo = params.get('repo');
       this.pageIndex = +params.get('pageIndex');
+      this.pageSize = +params.get('pageSize') || 5;
       this.initForm();
+      this.getRepos();
       if (this.owner && this.repo) { this.getIssues(); }
     });
-    this.getRepos();
   }
 
   initForm(): void {
@@ -69,7 +73,7 @@ export class IssueListComponent implements OnInit {
     return this.repos.filter(repo => repo.toLowerCase().includes(value));
   }
 
-  private validateRepoInput(v) {
+  private validateRepoInput(v): void {
     const value = v.toLowerCase();
     if (!this.repos.includes(value)) {
       this.repoControl.setErrors({ notInList: true });
@@ -88,6 +92,7 @@ export class IssueListComponent implements OnInit {
   getRepos(): void {
     this.form.get('owner').valueChanges
       .pipe(
+        tap(() => this.repoControl.setValue('')),
         debounceTime(400),
         switchMap(username => {
           if (username.length > 0) {
@@ -100,6 +105,7 @@ export class IssueListComponent implements OnInit {
       .subscribe(res => {
         this.repos = res;
         this.filteredRepos = this.getFilteredRepos();
+        this.dataSrv.currentRepos = this.filteredRepos;
       });
   }
 
@@ -121,12 +127,14 @@ export class IssueListComponent implements OnInit {
 
   onSubmit(): void {
     const val = this.form.value;
-    this.router.navigate(['search', val.owner, val.repo, 1]);
+    this.router.navigate(['search', val.owner, val.repo, 1, { pageSize: this.pageSize }]);
   }
 
   pageEvent(ev): void {
     this.pageSize = ev.pageSize;
-    this.router.navigate(['search', this.owner, this.repo, ev.pageIndex + 1]);
+    if (this.owner && this.repo) {
+      this.router.navigate(['search', this.owner, this.repo, ev.pageIndex + 1, { pageSize: this.pageSize }]);
+    }
   }
 
 }
