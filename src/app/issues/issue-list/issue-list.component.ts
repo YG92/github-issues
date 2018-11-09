@@ -19,9 +19,9 @@ export class IssueListComponent implements OnInit {
 
   issues: IssueBaseModel[];
   loading = false;
-  owner = '';
-  repo = '';
-  repos: string[];
+  owner: string;
+  repo: string;
+  repos = this.dataSrv.currentRepos;
   filteredRepos: Observable<string[]>;
   resultsLength: number;
   pageIndex: number;
@@ -40,22 +40,23 @@ export class IssueListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.filteredRepos = this.dataSrv.currentRepos;
+    this.initForm();
     this.route.paramMap.subscribe(params => {
       this.owner = params.get('owner');
       this.repo = params.get('repo');
       this.pageIndex = +params.get('pageIndex');
       this.pageSize = +params.get('pageSize') || 5;
-      this.initForm();
+      this.form.setValue({ owner: this.owner, repo: this.repo });
       this.getRepos();
+      this.filteredRepos = this.getFilteredRepos();
       if (this.owner && this.repo) { this.getIssues(); }
     });
   }
 
   initForm(): void {
     this.form = this.fb.group({
-      owner: [this.owner, Validators.required],
-      repo: [this.repo, Validators.required]
+      owner: ['', Validators.required],
+      repo: ['', Validators.required]
     });
   }
 
@@ -74,9 +75,11 @@ export class IssueListComponent implements OnInit {
   }
 
   private validateRepoInput(v): void {
-    const value = v.toLowerCase();
-    if (!this.repos.includes(value)) {
-      this.repoControl.setErrors({ notInList: true });
+    if (v) {
+      const value = v.toLowerCase();
+      if (!this.repos.includes(value)) {
+        this.repoControl.setErrors({ notInList: true });
+      }
     }
   }
 
@@ -104,8 +107,8 @@ export class IssueListComponent implements OnInit {
       )
       .subscribe(res => {
         this.repos = res;
+        this.dataSrv.currentRepos = res;
         this.filteredRepos = this.getFilteredRepos();
-        this.dataSrv.currentRepos = this.filteredRepos;
       });
   }
 
