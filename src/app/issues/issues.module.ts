@@ -8,7 +8,7 @@ import { IssueService } from './issue-service/issue.service';
 import { SharedModule } from '../shared/shared.module';
 import { IssuesRoutingModule } from './issues-routing.module';
 import { ReposService } from './repos-service/repos.service';
-import { StoreDataService } from './store-data/store-data.service';
+import { StoreDataService } from './store-data-service/store-data.service';
 
 @NgModule({
   imports: [

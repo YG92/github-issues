@@ -8,7 +8,7 @@ import { ErrorAlertComponent } from '../../shared/error-alert/error-alert.compon
 import { IssueBaseModel } from './issue-base.model';
 import { IssueService } from '../issue-service/issue.service';
 import { ReposService } from '../repos-service/repos.service';
-import { StoreDataService } from '../store-data/store-data.service';
+import { StoreDataService } from '../store-data-service/store-data.service';
 
 @Component({
   selector: 'app-issue-list',
@@ -75,7 +75,7 @@ export class IssueListComponent implements OnInit {
   }
 
   private validateRepoInput(v): void {
-    if (v) {
+    if (v && this.repos) {
       const value = v.toLowerCase();
       if (!this.repos.includes(value)) {
         this.repoControl.setErrors({ notInList: true });
