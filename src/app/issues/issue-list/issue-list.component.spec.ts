@@ -9,6 +9,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { IssueService } from '../issue-service/issue.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { StoreDataService } from '../store-data-service/store-data.service';
 
 class ReposServiceMocked {
   getRepos(): Observable<string[]> {
@@ -33,7 +34,11 @@ describe('IssueListComponent', () => {
     })
     .overrideComponent(IssueListComponent, {
       set: {
-        providers: [{ provide: ReposService, useClass: ReposServiceMocked}, IssueService]
+        providers: [
+          { provide: ReposService, useClass: ReposServiceMocked },
+          { provide: StoreDataService, useValue: {} },
+          { provide: IssueService, useValue: {} }
+        ]
       }
     })
     .compileComponents();
@@ -45,7 +50,7 @@ describe('IssueListComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should make an api call when value changes in owner input', fakeAsync(() => {
+  it('should make an api call when value changes', fakeAsync(() => {
     const owner = component.form.get('owner');
     owner.setValue('someValue');
     tick(400);
